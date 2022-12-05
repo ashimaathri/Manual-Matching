@@ -22,17 +22,14 @@ MainWindow::MainWindow(QWidget *parent)
     QGraphicsScene *scene1 = new QGraphicsScene();
     QGraphicsScene *scene2 = new QGraphicsScene();
 
-    QPixmap pic1("/home/ashima/Desktop/hidden_camera/kantara/frames/2754.jpg");
-
     ui->graphicsView->setScene(scene1);
-    scene1->addPixmap(pic1);
-
-    QPixmap pic2("/home/ashima/Desktop/hidden_camera/kantara/frames/2755.jpg");
-    scene2->addPixmap(pic2);
     ui->graphicsView_2->setScene(scene2);
 
     ui->label->setText("Selected pixel coordinates will appear here.");
     ui->label_2->setText("Selected pixel coordinates will appear here");
+
+    createActions();
+    createMenus();
 }
 
 MainWindow::~MainWindow()
@@ -40,8 +37,36 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::createMenus()
+{
+    imageMenu = ui->menubar->addMenu("&Select images");
+    imageMenu->addAction(chooseLeftImage);
+    imageMenu->addAction(chooseRightImage);
+}
 
-//Get position with scroll and top margin in consideration
+void MainWindow::createActions()
+{
+    chooseLeftImage = new QAction(tr("&Select Left Image"), this);
+    connect(chooseLeftImage, &QAction::triggered, this, &MainWindow::loadLeftImage);
+
+    chooseRightImage = new QAction(tr("&Select Right Image"), this);
+    connect(chooseRightImage, &QAction::triggered, this, &MainWindow::loadRightImage);
+}
+
+void MainWindow::loadLeftImage()
+{
+    QString filename = QFileDialog::getOpenFileName(this);
+    QPixmap pic(filename);
+    ui->graphicsView->scene()->addPixmap(pic);
+}
+
+void MainWindow::loadRightImage()
+{
+    QString filename = QFileDialog::getOpenFileName(this);
+    QPixmap pic(filename);
+    ui->graphicsView_2->scene()->addPixmap(pic);
+}
+
 bool MainWindow::eventFilter(QObject *object, QEvent *event)
 {
     if ( object == ui->graphicsView && (event->type() == QEvent::MouseButtonPress)) {
@@ -49,7 +74,7 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
         point1 = ui->graphicsView->mapToScene(mouseEvent->pos());
 
         ui->label->setText(QStringLiteral("%1, %2").arg(point1.x()).arg(point1.y()));
-        // Check if selection's scene is not null or matches with this scene
+        // TODO: Check if selection's scene is not null or matches with this scene
         if(currentSelection1 != NULL) {
             ui->graphicsView->scene()->removeItem(currentSelection1);
             delete currentSelection1;

@@ -7,6 +7,8 @@
 #include <QVector>
 #include <QPointF>
 #include <QPair>
+#include <QMenu>
+#include <QAction>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -33,6 +35,13 @@ private:
     QVector<QPair<QGraphicsEllipseItem*, QGraphicsEllipseItem*>> selectedMatches;
     QPointF point1;
     QPointF point2;
+    QMenu *imageMenu;
+    QAction *chooseLeftImage;
+    QAction *chooseRightImage;
     bool eventFilter(QObject *object, QEvent *event);
+    void createMenus();
+    void createActions();
+    void loadLeftImage();
+    void loadRightImage();
 };
 #endif // MAINWINDOW_H
